@@ -20,6 +20,7 @@ package fr.cnes.sonar.report.factory;
 import fr.cnes.sonar.report.exceptions.BadExportationDataTypeException;
 import fr.cnes.sonar.report.exporters.*;
 import fr.cnes.sonar.report.exporters.docx.DocXExporter;
+import fr.cnes.sonar.report.exporters.pdf.PdfExporter;
 import fr.cnes.sonar.report.exporters.md.MarkdownExporter;
 import fr.cnes.sonar.report.exporters.xlsx.XlsXExporter;
 import fr.cnes.sonar.report.model.ProfileMetaData;
@@ -50,6 +51,8 @@ public class ReportFactory {
     private static final String CSV_FILENAME = "csv.output";
     /** Property for the CSV report filename. */
     private static final String MD_FILENAME = "markdown.output";
+    /** Property for the PDF report filename. */
+    private static final String PDF_FILENAME = "pdf.output";
     /** Property for the excel report filename. */
     private static final String ISSUES_FILENAME = "issues.output";
     /** Pattern for the name of the directory containing configuration files. */
@@ -89,6 +92,7 @@ public class ReportFactory {
         final XlsXExporter issuesExporter = new XlsXExporter();
         final CSVExporter csvExporter = new CSVExporter();
         final MarkdownExporter markdownExporter =  new MarkdownExporter();
+        final PdfExporter pdfExporter = new PdfExporter();
         
         // create the output directory if it doesn't exist
         Path path = Paths.get(configuration.getOutput());
@@ -102,11 +106,19 @@ public class ReportFactory {
         }
 
         // Export issues and metrics in report if requested.
-        if(configuration.isEnableReport()) {
-            // prepare docx report's filename
-            final String docXFilename = formatFilename(REPORT_FILENAME, configuration.getOutput(), configuration.getDate(), model.getProjectName());
+        if(configuration.isEnableReport() || configuration.isEnablePdf()) {
+            final String docXFilename = configuration.isEnableReport()
+                    ? formatFilename(REPORT_FILENAME, configuration.getOutput(), configuration.getDate(), model.getProjectName())
+                    : Files.createTempFile(path, "cnesreport-", ".docx").toString();
             // export the full docx report
             docXExporter.export(model, docXFilename, configuration.getTemplateReport());
+            if (configuration.isEnablePdf()) {
+                final String pdfFilename = formatFilename(PDF_FILENAME, configuration.getOutput(), configuration.getDate(), model.getProjectName());
+                pdfExporter.export(docXFilename, pdfFilename, null);
+            }
+            if (!configuration.isEnableReport()) {
+                Files.deleteIfExists(Paths.get(docXFilename));
+            }
         }
 
         // Export issues in spreadsheet if requested.
