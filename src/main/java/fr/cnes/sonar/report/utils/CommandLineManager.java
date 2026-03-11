@@ -57,6 +57,7 @@ public class CommandLineManager {
             {"d", "date", Boolean.TRUE.toString(), "Date for the report. Format: " + StringManager.DATE_PATTERN + ". Default: current date."},
             {"c", "disable-conf", Boolean.FALSE.toString(), "Disable export of quality configuration used during analysis."},
             {"w", "disable-report", Boolean.FALSE.toString(), "Disable report generation."},
+            {"i", "disable-pdf", Boolean.FALSE.toString(), "Disable PDF generation."},
             {"e", "disable-spreadsheet", Boolean.FALSE.toString(), "Disable spreadsheet generation."},
             {"f", "disable-csv", Boolean.FALSE.toString(), "Disable CSV generation"},
             {"m", "disable-markdown", Boolean.FALSE.toString(), "Disable Markdown generation"},
