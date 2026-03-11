@@ -107,6 +107,44 @@ public class ReportFactory {
             final String docXFilename = formatFilename(REPORT_FILENAME, configuration.getOutput(), configuration.getDate(), model.getProjectName());
             // export the full docx report
             docXExporter.export(model, docXFilename, configuration.getTemplateReport());
+
+            // Generate PDF if requested
+            if (configuration.isEnablePdf()) {
+                try {
+                    // Extract script from resources to a temporary file
+                    java.io.InputStream in = ReportFactory.class.getResourceAsStream("/scripts/convert_to_pdf.sh");
+                    if (in == null) {
+                        LOGGER.warning("Could not find convert_to_pdf.sh in resources.");
+                    } else {
+                        Path tempScript = Files.createTempFile("convert_to_pdf", ".sh");
+                        Files.copy(in, tempScript, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                        in.close();
+                        tempScript.toFile().setExecutable(true);
+
+                        ProcessBuilder pb = new ProcessBuilder("bash", tempScript.toAbsolutePath().toString(), docXFilename);
+                        pb.redirectErrorStream(true);
+                        Process process = pb.start();
+
+                        // Consume output to prevent blocking
+                        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream()))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                LOGGER.info("[PDF Conversion] " + line);
+                            }
+                        }
+
+                        int exitCode = process.waitFor();
+                        if (exitCode != 0) {
+                            LOGGER.warning("Failed to convert DOCX to PDF, exit code: " + exitCode);
+                        }
+
+                        // Clean up
+                        Files.deleteIfExists(tempScript);
+                    }
+                } catch (InterruptedException | IOException e) {
+                    LOGGER.warning("Exception during PDF conversion: " + e.getMessage());
+                }
+            }
         }
 
         // Export issues in spreadsheet if requested.
