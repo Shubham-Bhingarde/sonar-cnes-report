@@ -55,6 +55,8 @@ public class ReportConfiguration {
     private boolean enableCSV;
     /** Options for m. */
     private boolean enableMarkdown;
+    /** Options for y. */
+    private boolean enablePdf;
     /** Options for r. */
     private String templateReport;
     /** Options for x. */
@@ -85,7 +87,7 @@ public class ReportConfiguration {
                                 final String language, final String author, final String date,
                                 final boolean enableConf, final boolean enableReport,
                                 final boolean enableSpreadsheet, final boolean enableCSV,
-                                final boolean enableMarkdown, String templateReport,
+                                final boolean enableMarkdown, final boolean enablePdf, String templateReport,
                                 final String templateSpreadsheet, final String templateMarkdown, final String branch) {
         this.help = help;
         this.version = version;
@@ -101,6 +103,7 @@ public class ReportConfiguration {
         this.enableSpreadsheet = enableSpreadsheet;
         this.enableCSV = enableCSV;
         this.enableMarkdown = enableMarkdown;
+        this.enablePdf = enablePdf;
         this.templateReport = templateReport;
         this.templateSpreadsheet = templateSpreadsheet;
         this.templateMarkdown = templateMarkdown;
@@ -136,6 +139,7 @@ public class ReportConfiguration {
                 !commandLineManager.hasOption("e"),
                 !commandLineManager.hasOption("f"), // Why f? Because every "logic" options like "c" are already used
                 !commandLineManager.hasOption("m"),
+                commandLineManager.hasOption("y"), // PDF generation disabled by default
                 commandLineManager.getOptionValue("r", StringManager.EMPTY),
                 commandLineManager.getOptionValue("x", StringManager.EMPTY),
                 commandLineManager.getOptionValue("n", StringManager.EMPTY),
@@ -190,6 +194,8 @@ public class ReportConfiguration {
     public boolean isEnableCSV(){ return enableCSV; }
 
     public boolean isEnableMarkdown(){ return enableMarkdown; }
+
+    public boolean isEnablePdf(){ return enablePdf; }
 
     public boolean isEnableReport() {
         return enableReport;
