@@ -111,6 +111,9 @@ public class ExportTask implements RequestHandler {
             final Request.StringParam pEnableXlsx =
                     request.getParam(PluginStringManager.getProperty("api.report.args.enableXlsx"));
 
+            final Request.StringParam pEnablePdf =
+                    request.getParam(PluginStringManager.getProperty("api.report.args.enablePdf"));
+
             final Request.StringParam pEnableCsv =
                     request.getParam(PluginStringManager.getProperty("api.report.args.enableCsv"));
 
@@ -160,6 +163,7 @@ public class ExportTask implements RequestHandler {
             String pEnableMdValue = pEnableMd.getValue();
             String pEnableXlsxValue = pEnableXlsx.getValue();
             String pEnableCsvValue = pEnableCsv.getValue();
+            String pEnablePdfValue = pEnablePdf.getValue();
             String pEnableConfValue = pEnableConf.getValue();
 
             // add disable files generation params if requested
@@ -173,7 +177,16 @@ public class ExportTask implements RequestHandler {
                 reportParams.add("-e");
             }
             if(pEnableCsvValue != null && (pEnableCsvValue.equals(FALSE) || pEnableCsvValue.equals(NO))) {
+            if(pEnablePdfValue != null && (pEnablePdfValue.equals(FALSE) || pEnablePdfValue.equals(NO))) {
+                reportParams.add("-z");
+            }
                 reportParams.add("-f");
+            if(pEnablePdfValue != null && (pEnablePdfValue.equals(FALSE) || pEnablePdfValue.equals(NO))) {
+                reportParams.add("-z");
+            }
+            }
+            if(pEnablePdfValue != null && (pEnablePdfValue.equals(FALSE) || pEnablePdfValue.equals(NO))) {
+                reportParams.add("-z");
             }
             if(pEnableConfValue != null && (pEnableConfValue.equals(FALSE) || pEnableConfValue.equals(NO))) {
                 reportParams.add("-c");

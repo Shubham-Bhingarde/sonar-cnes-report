@@ -1,0 +1,14 @@
+#!/bin/bash
+# Update CnesReportApp.js
+sed -i 's/enableCsv: true,/enableCsv: true,\n        enablePdf: true,/' src/main/js/global_page/components/CnesReportApp.js
+sed -i 's/case '"'"'enableCsv'"'"':/case '"'"'enablePdf'"'"':\n                this.setState({enablePdf: !this.state.enablePdf});\n                break;\n            case '"'"'enableCsv'"'"':/' src/main/js/global_page/components/CnesReportApp.js
+sed -i 's/|| this.state.enableCsv || this.state.enableConf);/|| this.state.enableCsv || this.state.enablePdf || this.state.enableConf);/' src/main/js/global_page/components/CnesReportApp.js
+sed -i '/<label for="enableCsv" id="enableCsvLabel"><strong>Enable CSV generation<\/strong><\/label>/,/<\/div>/a \
+                        <div>\n                            <input id="enablePdfHidden" type="hidden" value="false" name="enablePdf" disabled={this.state.enablePdf}/>\n                            <input type="checkbox"\n                                id="enablePdf"\n                                name="enablePdf"\n                                value="true"\n                                defaultChecked={this.state.enablePdf}\n                                onChange={() => this.onChangeCheckbox('"'"'enablePdf'"'"')}/>\n                            <label for="enablePdf" id="enablePdfLabel"><strong>Enable PDF generation<\/strong><\/label>\n                        </div>' src/main/js/global_page/components/CnesReportApp.js
+
+# Update CnesReportProject.js
+sed -i 's/enableCsv: true,/enableCsv: true,\n        enablePdf: true,/' src/main/js/project_page/view/CnesReportProject.js
+sed -i 's/case '"'"'enableCsv'"'"':/case '"'"'enablePdf'"'"':\n                this.setState({enablePdf: !this.state.enablePdf});\n                break;\n            case '"'"'enableCsv'"'"':/' src/main/js/project_page/view/CnesReportProject.js
+sed -i 's/|| this.state.enableCsv || this.state.enableConf);/|| this.state.enableCsv || this.state.enablePdf || this.state.enableConf);/' src/main/js/project_page/view/CnesReportProject.js
+sed -i '/<label for="enableCsv" id="enableCsvLabel"><strong>Enable CSV generation<\/strong><\/label>/,/<\/div>/a \
+                        <div>\n                            <input id="enablePdfHidden" type="hidden" value="false" name="enablePdf" disabled={this.state.enablePdf}/>\n                            <input type="checkbox"\n                                id="enablePdf"\n                                name="enablePdf"\n                                value="true"\n                                defaultChecked={this.state.enablePdf}\n                                onChange={() => this.onChangeCheckbox('"'"'enablePdf'"'"')}/>\n                            <label for="enablePdf" id="enablePdfLabel"><strong>Enable PDF generation<\/strong><\/label>\n                        </div>' src/main/js/project_page/view/CnesReportProject.js
