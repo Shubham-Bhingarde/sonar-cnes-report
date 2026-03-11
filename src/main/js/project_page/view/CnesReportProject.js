@@ -17,6 +17,7 @@ export default class CnesReportProject extends React.PureComponent {
         enableMd: true,
         enableXlsx: true,
         enableCsv: true,
+        enablePdf: true,
         enableConf: true,
         isSupported: true
     };
@@ -39,6 +40,9 @@ export default class CnesReportProject extends React.PureComponent {
             case 'enableCsv':
                 this.setState({enableCsv: !this.state.enableCsv});
                 break;
+            case 'enablePdf':
+                this.setState({enablePdf: !this.state.enablePdf});
+                break;
             case 'enableConf':
                 this.setState({enableConf: !this.state.enableConf});
                 break;
@@ -48,7 +52,7 @@ export default class CnesReportProject extends React.PureComponent {
     // disable generate button if no checkbox is checked to prevent the generation of an empty zip
     shouldDisableGeneration = () => {
         return !(this.state.enableDocx || this.state.enableMd || this.state.enableXlsx
-            || this.state.enableCsv || this.state.enableConf);
+            || this.state.enableCsv || this.state.enablePdf || this.state.enableConf);
     }
 
     componentDidMount() {
@@ -153,6 +157,16 @@ export default class CnesReportProject extends React.PureComponent {
                                 defaultChecked={this.state.enableCsv}
                                 onChange={() => this.onChangeCheckbox('enableCsv')}/>
                             <label for="enableCsv" id="enableCsvLabel"><strong>Enable CSV generation</strong></label>
+                        </div>
+                        <div>
+                            <input id="enablePdfHidden" type="hidden" value="false" name="enablePdf" disabled={this.state.enablePdf}/>
+                            <input type="checkbox"
+                                id="enablePdf"
+                                name="enablePdf"
+                                value="true"
+                                defaultChecked={this.state.enablePdf}
+                                onChange={() => this.onChangeCheckbox('enablePdf')}/>
+                            <label for="enablePdf" id="enablePdfLabel"><strong>Enable PDF generation</strong></label>
                         </div>
                         <div>
                             <input id="enableConfHidden" type="hidden" value="false" name="enableConf" disabled={this.state.enableConf}/>

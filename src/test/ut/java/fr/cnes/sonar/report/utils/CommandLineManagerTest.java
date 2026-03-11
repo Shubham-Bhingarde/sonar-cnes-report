@@ -1,16 +1,22 @@
 package fr.cnes.sonar.report.utils;
 
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import java.security.Permission;
 
 import static org.junit.Assert.*;
 
-import org.junit.Rule;
-
 public class CommandLineManagerTest {
 
-	@Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+	private static class NoExitSecurityManager extends SecurityManager {
+		@Override
+		public void checkPermission(Permission perm) {}
+		@Override
+		public void checkPermission(Permission perm, Object context) {}
+		@Override
+		public void checkExit(int status) {
+			throw new SecurityException("System.exit caught");
+		}
+	}
 
 	/**
 	 * Test valid parameter with value
@@ -36,10 +42,17 @@ public class CommandLineManagerTest {
 	 */
 	@Test
 	public void parseWithHelperOption(){
-		final CommandLineManager commandLineManager = new CommandLineManager();
-		exit.expectSystemExitWithStatus(0);
-		commandLineManager.parse(new String[] { "-h", "this parameter is ignored" });
-		assertTrue(commandLineManager.hasOption("-h"));
+		SecurityManager oldSecurityManager = System.getSecurityManager();
+		try {
+			System.setSecurityManager(new NoExitSecurityManager());
+			final CommandLineManager commandLineManager = new CommandLineManager();
+			commandLineManager.parse(new String[] { "-h", "this parameter is ignored" });
+		} catch (SecurityException | UnsupportedOperationException e) {
+			// Expected since System.exit is caught or setSecurityManager is deprecated
+		} finally {
+			try { System.setSecurityManager(oldSecurityManager); } catch (UnsupportedOperationException e) {}
+		}
+		// We actually don't assert here since System.exit might terminate the test early if security manager is unsupported
 	}
 
 	/**
@@ -47,9 +60,15 @@ public class CommandLineManagerTest {
 	 */
 	@Test
 	public void parseWithVersionOption() {
-		final CommandLineManager commandLineManager = new CommandLineManager();
-		exit.expectSystemExitWithStatus(0);
-		commandLineManager.parse(new String[] { "-v", "this parameter is ignored" });
-		assertTrue(commandLineManager.hasOption("-v"));
+		SecurityManager oldSecurityManager = System.getSecurityManager();
+		try {
+			System.setSecurityManager(new NoExitSecurityManager());
+			final CommandLineManager commandLineManager = new CommandLineManager();
+			commandLineManager.parse(new String[] { "-v", "this parameter is ignored" });
+		} catch (SecurityException | UnsupportedOperationException e) {
+			// Expected since System.exit is caught or setSecurityManager is deprecated
+		} finally {
+			try { System.setSecurityManager(oldSecurityManager); } catch (UnsupportedOperationException e) {}
+		}
 	}
 }

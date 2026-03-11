@@ -20,6 +20,7 @@ package fr.cnes.sonar.report.factory;
 import fr.cnes.sonar.report.exceptions.BadExportationDataTypeException;
 import fr.cnes.sonar.report.exporters.*;
 import fr.cnes.sonar.report.exporters.docx.DocXExporter;
+import fr.cnes.sonar.report.exporters.pdf.PdfExporter;
 import fr.cnes.sonar.report.exporters.md.MarkdownExporter;
 import fr.cnes.sonar.report.exporters.xlsx.XlsXExporter;
 import fr.cnes.sonar.report.model.ProfileMetaData;
@@ -48,6 +49,8 @@ public class ReportFactory {
     private static final String REPORT_FILENAME = "report.output";
     /** Property for the CSV report filename. */
     private static final String CSV_FILENAME = "csv.output";
+    /** Property for the PDF report filename. */
+    private static final String PDF_FILENAME = "pdf.output";
     /** Property for the CSV report filename. */
     private static final String MD_FILENAME = "markdown.output";
     /** Property for the excel report filename. */
@@ -88,6 +91,7 @@ public class ReportFactory {
         final JsonExporter gateExporter = new JsonExporter();
         final XlsXExporter issuesExporter = new XlsXExporter();
         final CSVExporter csvExporter = new CSVExporter();
+        final PdfExporter pdfExporter = new PdfExporter();
         final MarkdownExporter markdownExporter =  new MarkdownExporter();
         
         // create the output directory if it doesn't exist
@@ -107,6 +111,12 @@ public class ReportFactory {
             final String docXFilename = formatFilename(REPORT_FILENAME, configuration.getOutput(), configuration.getDate(), model.getProjectName());
             // export the full docx report
             docXExporter.export(model, docXFilename, configuration.getTemplateReport());
+        }
+
+        // Export in PDF if requested
+        if(configuration.isEnablePdf()) {
+            final String pdfFilename = formatFilename(PDF_FILENAME, configuration.getOutput(), configuration.getDate(), model.getProjectName());
+            pdfExporter.export(model, pdfFilename, configuration.getTemplateReport());
         }
 
         // Export issues in spreadsheet if requested.

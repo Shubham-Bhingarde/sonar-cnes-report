@@ -120,6 +120,13 @@ public class ReportWs implements WebService {
         enableCsvParam.setBooleanPossibleValues();
         enableCsvParam.setDefaultValue(PluginStringManager.getProperty("api.report.args.defaultValue.enableCsv"));
 
+        // Adding enablePdf argument
+        WebService.NewParam enablePdfParam = report.createParam(PluginStringManager.getProperty("api.report.args.enablePdf"));
+        enablePdfParam.setDescription(PluginStringManager.getProperty("api.report.args.description.enablePdf"));
+        enablePdfParam.setRequired(false);
+        enablePdfParam.setBooleanPossibleValues();
+        enablePdfParam.setDefaultValue(PluginStringManager.getProperty("api.report.args.defaultValue.enablePdf"));
+
         // Adding enableConf argument
         WebService.NewParam enableConfParam = report.createParam(PluginStringManager.getProperty("api.report.args.enableConf"));
         enableConfParam.setDescription(PluginStringManager.getProperty("api.report.args.description.enableConf"));
