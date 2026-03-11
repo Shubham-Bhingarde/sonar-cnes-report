@@ -177,13 +177,7 @@ public class ExportTask implements RequestHandler {
                 reportParams.add("-e");
             }
             if(pEnableCsvValue != null && (pEnableCsvValue.equals(FALSE) || pEnableCsvValue.equals(NO))) {
-            if(pEnablePdfValue != null && (pEnablePdfValue.equals(FALSE) || pEnablePdfValue.equals(NO))) {
-                reportParams.add("-z");
-            }
                 reportParams.add("-f");
-            if(pEnablePdfValue != null && (pEnablePdfValue.equals(FALSE) || pEnablePdfValue.equals(NO))) {
-                reportParams.add("-z");
-            }
             }
             if(pEnablePdfValue != null && (pEnablePdfValue.equals(FALSE) || pEnablePdfValue.equals(NO))) {
                 reportParams.add("-z");
