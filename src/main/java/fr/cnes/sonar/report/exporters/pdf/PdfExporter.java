@@ -43,22 +43,38 @@ public class PdfExporter implements IExporter {
         }
 
         File outputPdf = new File(path);
+        File tempProfileDir = null;
 
         try {
+            // Create a unique temporary directory for the LibreOffice user profile to prevent lock file issues
+            tempProfileDir = Files.createTempDirectory("libreoffice_profile_").toFile();
+
             // Execute libreoffice command directly
             ProcessBuilder pb = new ProcessBuilder(
                     "libreoffice",
+                    "-env:UserInstallation=file://" + tempProfileDir.getAbsolutePath(),
                     "--headless",
                     "--convert-to", "pdf",
                     "--outdir", outputPdf.getParentFile().getAbsolutePath(),
                     docxFile.getAbsolutePath()
             );
 
+            pb.redirectErrorStream(true); // Combine stdout and stderr
             Process process = pb.start();
+
+            // Read output to prevent process blocking and to log any errors
+            StringBuilder output = new StringBuilder();
+            try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append(System.lineSeparator());
+                }
+            }
+
             int exitCode = process.waitFor();
 
             if (exitCode != 0) {
-                LOGGER.log(Level.WARNING, "LibreOffice command failed with exit code: " + exitCode + ". Falling back to POI converter.");
+                LOGGER.log(Level.WARNING, "LibreOffice command failed with exit code: " + exitCode + ". Output:\n" + output.toString() + "\nFalling back to POI converter.");
                 fallbackToPoiConverter(docxFile, outputPdf);
             } else {
                 // LibreOffice output name is the same as docx file but with .pdf extension
@@ -71,9 +87,23 @@ public class PdfExporter implements IExporter {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error while executing LibreOffice command. Falling back to POI converter.", e);
             fallbackToPoiConverter(docxFile, outputPdf);
+        } finally {
+            if (tempProfileDir != null && tempProfileDir.exists()) {
+                deleteDirectoryRecursively(tempProfileDir);
+            }
         }
 
         return outputPdf;
+    }
+
+    private void deleteDirectoryRecursively(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectoryRecursively(file);
+            }
+        }
+        directoryToBeDeleted.delete();
     }
 
     private void fallbackToPoiConverter(File docxFile, File outputPdf) {
