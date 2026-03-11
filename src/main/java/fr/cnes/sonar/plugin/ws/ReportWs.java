@@ -99,6 +99,13 @@ public class ReportWs implements WebService {
         enableDocxParam.setBooleanPossibleValues();
         enableDocxParam.setDefaultValue(PluginStringManager.getProperty("api.report.args.defaultValue.enableDocx"));
 
+        // Adding enablePdf argument
+        WebService.NewParam enablePdfParam = report.createParam(PluginStringManager.getProperty("api.report.args.enablePdf"));
+        enablePdfParam.setDescription(PluginStringManager.getProperty("api.report.args.description.enablePdf"));
+        enablePdfParam.setRequired(false);
+        enablePdfParam.setBooleanPossibleValues();
+        enablePdfParam.setDefaultValue(PluginStringManager.getProperty("api.report.args.defaultValue.enablePdf"));
+
         // Adding enableMd argument
         WebService.NewParam enableMdParam = report.createParam(PluginStringManager.getProperty("api.report.args.enableMd"));
         enableMdParam.setDescription(PluginStringManager.getProperty("api.report.args.description.enableMd"));

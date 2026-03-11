@@ -42,6 +42,7 @@ public class ReportWsTest {
         testActionConf();
         testActionCsv();
         testActionDocx();
+        testActionPdf();
         testActionKey();
         testActionLanguage();
         testActionMd();
@@ -148,6 +149,24 @@ public class ReportWsTest {
                 .possibleValues().contains("no"));
     }
 
+
+    public void testActionPdf() {
+        // Control the webservice enablePdf parameter
+        assertEquals(PluginStringManager.getProperty("api.report.args.description.enablePdf"),
+                this.reportAction.param(PluginStringManager.getProperty("api.report.args.enablePdf")).description());
+        assertEquals(false,
+                this.reportAction.param(PluginStringManager.getProperty("api.report.args.enablePdf")).isRequired());
+        assertEquals(4, this.reportAction.param(PluginStringManager.getProperty("api.report.args.enablePdf"))
+                .possibleValues().size());
+        assertTrue(this.reportAction.param(PluginStringManager.getProperty("api.report.args.enablePdf"))
+                .possibleValues().contains("true"));
+        assertTrue(this.reportAction.param(PluginStringManager.getProperty("api.report.args.enablePdf"))
+                .possibleValues().contains("false"));
+        assertTrue(this.reportAction.param(PluginStringManager.getProperty("api.report.args.enablePdf"))
+                .possibleValues().contains("yes"));
+        assertTrue(this.reportAction.param(PluginStringManager.getProperty("api.report.args.enablePdf"))
+                .possibleValues().contains("no"));
+    }
     public void testActionMd() {
         // Control the webservice enableMd parameter
         assertEquals(PluginStringManager.getProperty("api.report.args.description.enableMd"),
