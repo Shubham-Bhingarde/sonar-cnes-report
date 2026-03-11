@@ -43,54 +43,34 @@ public class PdfExporter implements IExporter {
         }
 
         File outputPdf = new File(path);
-        File tempScript = null;
 
         try {
-            // Extract the bash script from resources
-            InputStream scriptStream = getClass().getResourceAsStream("/docx_to_pdf.sh");
-            if (scriptStream != null) {
-                tempScript = File.createTempFile("docx_to_pdf", ".sh");
-                Files.copy(scriptStream, tempScript.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            // Execute libreoffice command directly
+            ProcessBuilder pb = new ProcessBuilder(
+                    "libreoffice",
+                    "--headless",
+                    "--convert-to", "pdf",
+                    "--outdir", outputPdf.getParentFile().getAbsolutePath(),
+                    docxFile.getAbsolutePath()
+            );
 
-                // Make it executable
-                Set<PosixFilePermission> perms = new HashSet<>();
-                perms.add(PosixFilePermission.OWNER_READ);
-                perms.add(PosixFilePermission.OWNER_WRITE);
-                perms.add(PosixFilePermission.OWNER_EXECUTE);
-                Files.setPosixFilePermissions(tempScript.toPath(), perms);
+            Process process = pb.start();
+            int exitCode = process.waitFor();
 
-                // Execute the script
-                ProcessBuilder pb = new ProcessBuilder(
-                        tempScript.getAbsolutePath(),
-                        docxFile.getAbsolutePath(),
-                        outputPdf.getParentFile().getAbsolutePath()
-                );
-
-                Process process = pb.start();
-                int exitCode = process.waitFor();
-
-                if (exitCode != 0) {
-                    LOGGER.log(Level.WARNING, "Bash script docx_to_pdf.sh failed with exit code: " + exitCode + ". Falling back to POI converter.");
-                    fallbackToPoiConverter(docxFile, outputPdf);
-                } else {
-                    // LibreOffice output name is the same as docx file but with .pdf extension
-                    String libreOfficeOutputName = docxFile.getName().substring(0, docxFile.getName().lastIndexOf('.')) + ".pdf";
-                    File libreOfficeOutputFile = new File(outputPdf.getParentFile(), libreOfficeOutputName);
-                    if (libreOfficeOutputFile.exists() && !libreOfficeOutputFile.getAbsolutePath().equals(outputPdf.getAbsolutePath())) {
-                        Files.move(libreOfficeOutputFile.toPath(), outputPdf.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    }
-                }
-            } else {
-                LOGGER.log(Level.WARNING, "Could not find docx_to_pdf.sh in resources. Falling back to POI converter.");
+            if (exitCode != 0) {
+                LOGGER.log(Level.WARNING, "LibreOffice command failed with exit code: " + exitCode + ". Falling back to POI converter.");
                 fallbackToPoiConverter(docxFile, outputPdf);
+            } else {
+                // LibreOffice output name is the same as docx file but with .pdf extension
+                String libreOfficeOutputName = docxFile.getName().substring(0, docxFile.getName().lastIndexOf('.')) + ".pdf";
+                File libreOfficeOutputFile = new File(outputPdf.getParentFile(), libreOfficeOutputName);
+                if (libreOfficeOutputFile.exists() && !libreOfficeOutputFile.getAbsolutePath().equals(outputPdf.getAbsolutePath())) {
+                    Files.move(libreOfficeOutputFile.toPath(), outputPdf.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error while executing DOCX to PDF script. Falling back to POI converter.", e);
+            LOGGER.log(Level.SEVERE, "Error while executing LibreOffice command. Falling back to POI converter.", e);
             fallbackToPoiConverter(docxFile, outputPdf);
-        } finally {
-            if (tempScript != null && tempScript.exists()) {
-                tempScript.delete();
-            }
         }
 
         return outputPdf;
