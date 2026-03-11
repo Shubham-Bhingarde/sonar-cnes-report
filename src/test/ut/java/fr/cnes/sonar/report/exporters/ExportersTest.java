@@ -22,6 +22,7 @@ import fr.cnes.sonar.report.CommonTest;
 import fr.cnes.sonar.report.exceptions.BadExportationDataTypeException;
 import fr.cnes.sonar.report.exporters.docx.DocXExporter;
 import fr.cnes.sonar.report.exporters.md.MarkdownExporter;
+import fr.cnes.sonar.report.exporters.pdf.PdfExporter;
 import fr.cnes.sonar.report.exporters.xlsx.XlsXExporter;
 import org.junit.Assert;
 import org.junit.Before;
@@ -109,6 +110,24 @@ public class ExportersTest extends CommonTest {
         final XmlExporter xe = new XmlExporter();
 
         Assert.assertNotNull(xe.export("<tag>value</tag>", TARGET, "test.json"));
+    }
+
+    /**
+     * Assert that there are no exception in a normal use
+     * of PdfExporter
+     * @throws Exception ...
+     */
+    @Test
+    public void pdfExportTest() throws Exception {
+        final PdfExporter pe = new PdfExporter();
+
+        // Ensure a dummy file exists since PdfExporter checks if the docx file exists
+        File dummyDocx = new File(TARGET + "/test.docx");
+        if (!dummyDocx.exists()) {
+            dummyDocx.createNewFile();
+        }
+
+        Assert.assertNotNull(pe.export(report, TARGET+"/test.pdf", TARGET+"/test.docx"));
     }
 
     /**
@@ -204,6 +223,18 @@ public class ExportersTest extends CommonTest {
         final MarkdownExporter xe = new MarkdownExporter();
 
         xe.export(4,TARGET+"test.md", "test.md");
+    }
+
+    /**
+     * Assert that there are bad data type exception in case
+     * of using bad resource to export for PdfExporter
+     * @throws Exception ...
+     */
+    @Test(expected = BadExportationDataTypeException.class)
+    public void pdfExportBadDataTest() throws Exception {
+        final PdfExporter pe = new PdfExporter();
+
+        pe.export(4, TARGET+"/test.pdf", TARGET+"/test.docx");
     }
 
     /**
