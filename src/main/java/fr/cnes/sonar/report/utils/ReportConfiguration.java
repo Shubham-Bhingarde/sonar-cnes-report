@@ -49,6 +49,8 @@ public class ReportConfiguration {
     private boolean enableConf;
     /** Options for w. */
     private boolean enableReport;
+    /** Options for i. */
+    private boolean enablePdf;
     /** Options for e. */
     private boolean enableSpreadsheet;
     /** Options for f. */
@@ -75,6 +77,7 @@ public class ReportConfiguration {
      * @param date Value for d option.
      * @param enableConf Value for c option.
      * @param enableReport Value for w option.
+     * @param enablePdf Value for i option.
      * @param enableSpreadsheet Value for e option.
      * @param templateReport Value for r option.
      * @param templateSpreadsheet Value for x option.
@@ -83,7 +86,7 @@ public class ReportConfiguration {
     private ReportConfiguration(final boolean help, final boolean version, final String server,
                                 final String token, final String project, final String output,
                                 final String language, final String author, final String date,
-                                final boolean enableConf, final boolean enableReport,
+                                final boolean enableConf, final boolean enableReport, final boolean enablePdf,
                                 final boolean enableSpreadsheet, final boolean enableCSV,
                                 final boolean enableMarkdown, String templateReport,
                                 final String templateSpreadsheet, final String templateMarkdown, final String branch) {
@@ -98,6 +101,7 @@ public class ReportConfiguration {
         this.date = date;
         this.enableConf = enableConf;
         this.enableReport = enableReport;
+        this.enablePdf = enablePdf;
         this.enableSpreadsheet = enableSpreadsheet;
         this.enableCSV = enableCSV;
         this.enableMarkdown = enableMarkdown;
@@ -133,6 +137,7 @@ public class ReportConfiguration {
                 commandLineManager.getOptionValue("d", new SimpleDateFormat(StringManager.DATE_PATTERN).format(new Date())),
                 !commandLineManager.hasOption("c"),
                 !commandLineManager.hasOption("w"),
+                !commandLineManager.hasOption("i"),
                 !commandLineManager.hasOption("e"),
                 !commandLineManager.hasOption("f"), // Why f? Because every "logic" options like "c" are already used
                 !commandLineManager.hasOption("m"),
@@ -193,6 +198,10 @@ public class ReportConfiguration {
 
     public boolean isEnableReport() {
         return enableReport;
+    }
+
+    public boolean isEnablePdf() {
+        return enablePdf;
     }
 
     public boolean isEnableSpreadsheet() {
